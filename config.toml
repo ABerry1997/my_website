@@ -82,8 +82,8 @@ disqusShortname = ""
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
     title = "Hi, my name is Alastair"
-    subtitle = "welcome to my portfolio" 
-    buttonText = "Get Started"
+    subtitle = "welcome to my portfolio : tracking my progress utlising R programming" 
+    buttonText = "You Know You Want To"
 
 
   # Tiles Section
@@ -138,14 +138,14 @@ disqusShortname = ""
   # Section Type Two
   [params.two]
     enable = true
-    title = "Massa libero"
+    title = "Professional Background"
     subtitle = """Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. 
     Mauris aliquet magna magna sed nunc rhoncus pharetra. 
     Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. 
     Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero.
     Mauris aliquet magna magna sed nunc rhoncus amet pharetra et feugiat tempus."""
-    buttonText = "Get Started"
-    url = "blogs"
+    buttonText = "Resume"
+    url = "Berry Alastair Resume.pdf"
 
 
   # Contact section
