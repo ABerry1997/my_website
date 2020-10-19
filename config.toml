@@ -37,8 +37,8 @@ disqusShortname = ""
 
   # Navigation Section
   [params.navigation]
-    title = "Forty"
-    subtitle = "By HTML5 Up"
+    title = "Alastair Berry's Website"
+    subtitle = "Enjoy!"
     menu = "Menu"
     # Optional logo as brand stored in img/
     # logo = "logo.png"
@@ -92,8 +92,8 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Aliquam"
-      subtitle = "Ipsum Dolor Sit Amet"
+      title = "About Me"
+      subtitle = "My Story So Far"
       image = "pic01.jpg"
       url = "blogs/aliquam"
 
