@@ -5,7 +5,7 @@ categories:
 date: "2017-10-31T21:28:43-05:00"
 description: ""
 draft: false
-image: Aboutmepic.JPG
+image: Aboutmepic.jpg
 keywords: ""
 slug: blog6
 title: About Me 
