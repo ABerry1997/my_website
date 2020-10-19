@@ -55,7 +55,7 @@ disqusShortname = ""
       # name = "Generic Blog"
      #  url = "blogs/ipsum"
 
-    [[params.navigation.links]]
+    # [[params.navigation.links]]
     #   name = "Elements"
      #  url = "elements.html"
 
@@ -94,8 +94,8 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "About Me"
       subtitle = "My Story So Far"
-      image = "pic01.jpg"
-      url = "blogs/aliquam"
+      image = "Aboutmepic.JPG"
+      url = "blogs/blog6"
 
     [[params.tiles.showcase]]
       title = "Alcohol Consumption"
