@@ -94,7 +94,7 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "About Me"
       subtitle = "My Story So Far"
-      image = "pic.07jpg"
+      image = "pic07.jpg"
       url = "blogs/blog6"
 
     [[params.tiles.showcase]]
@@ -139,12 +139,7 @@ disqusShortname = ""
   [params.two]
     enable = true
     title = "Professional Background"
-    subtitle = """Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. 
-    Mauris aliquet magna magna sed nunc rhoncus pharetra. 
-    Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. 
-    Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero.
-    Mauris aliquet magna magna sed nunc rhoncus amet pharetra et feugiat tempus."""
-    buttonText = "Resume"
+    subtitle = "Current Masters in Financial Analysis student at London Business School with experience in the private wealth management and manufacturing sectors. Hoping to leverage my experience and current masters experience to obtain employment in the corporate finance sector"   buttonText = "Resume"
     url = "Berry Alastair Resume.pdf"
 
 
