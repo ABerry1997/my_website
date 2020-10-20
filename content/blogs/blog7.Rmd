@@ -1,174 +1,392 @@
 ---
-title: 'Pre-programme Assignment 1'
-author: "ALASTAIR BERRY"
-date: "12/9/20"
-output:
-  html_document:
-    highlight: zenburn
-    theme: flatly
-    toc: yes
-    toc_float: yes
-  word_document:
-    toc: yes
+categories:
+- ""
+- ""
+date: "2017-10-31T21:28:43-05:00"
+description: ""
+draft: false
+image: pic08.jpg
+keywords: ""
+slug: blog7
+title: AirBnB Regression Model
 ---
 
+# Model Building 
 
-```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
-library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
-library(gapminder)  # gapminder dataset
-library(here)
-```
+Let's try to predict the cost of a 4 nights stay for 2 people in Brussels. In order to do that we are going to see the effectiveness of different groups of parameters, and ultimately try to combine them to establish the best model possible.
 
-# My Life So Far 
-
-## The Beginning 
-
-Hi there, it’s a pleasure to meet you and I’m looking forward to what is to come here at LBS. My name is Alastair Berry and I’m studying on the *Masters in Financial Analysis* program [LBS MFA](https://www.london.edu/masters-degrees/masters-in-financial-analysis) at **London Business School** .  For the first 18 years of my life I lived in a small countryside town in Scotland called Castle Douglas. It’s a lovely town surrounded by picturesque scenery, the sea and all the nature anyone could ask for . My favourite castle is pictured here : ![Threave Castle](https://dimg.visitscotland.com/wsimgs/dh021007036.jpg)
-From the age of six I played football and eventually got pretty good at it. Most of my teenage years were spent balancing my academics with high level sport and at the age of 17 I signed my first professional contract for Queen of The South. However I quickly realised that pursuing football as a career was a huge risk so I opted to pursue a football scholarship in America. 
-
-### Outside My Comfort Zone 
-
-Attending George Washington University in Washington , DC was the best decision I have made to date . While the first few months were tough I grew to love it. I enjoyed the diversity in particular as I was able to meet people from all over the world and learn from their unique experiences. Looking back I'm glad I put myself outside my comfort zone and got on that plane . It opened up doors for me that I didn't even know existed. Football wasn't going well and after two shoulder surgeries I called it quits on my dream of becoming a footballer. Studying finance and getting good grades afforded me the opportunity to pursue a job in Wealth Management. While I enjoyed the client facing aspect I wanted a more demanding and quantitative experience so decided to take the Chartered Financial Analyst Level 1 exam [CFA](https://www.cfainstitute.org). Luckily I passed and as a result was able to apply to **London Business School** without having to take the GMAT . What a relief !
-
-#### Back Home In The UK 
-
-Having been accepted to LBS , my life changed drastically. I now have the opportunity of a lifetime in front of me and I'm looking forward to making the most out of it. I've been blown away by how welcoming my classmates have been and how willing they are to help. There's a real community spirit here at LBS and I feel priviliged to be a part of it. 
-
-
-# Task 2: 
-
-Using the gapminder dataset we're going to take a closer look at the life expectancy rates of countries from around the world. 
-
-```{r}
-```
+First let see how the data is distributed:
 
 
 ```{r}
-glimpse(gapminder)
+
+#Plot the distribution of prices of 4nights in Brussels. 
+
+brussels_correl %>% 
+  select(price_4nights) %>% 
+  ggplot(aes(x=price_4nights))+
+  geom_histogram()+
+  
+#There are some very sparse data points beyond the price of 2000, but in order to have a better look  at the distribution we decided to "zoom in" on the bulk of it.
+  
+  xlim(0,2000)+
+  labs(title="Distribution of the price of a 4-day saty in Brussels", subtitle="Unfortunately, this distribution is heavily right skewed")
+
 ```
+
+
+We can observe that our distribution is heavily skewed to the right, and in order to manipulate price_4nights in the future we log the variable so that the distribution looks more normally distributed which is an assumption when performing a regression analysis.
 
 
 ```{r}
-head(gapminder, 20) 
+
+#Here we Log the price so that the distribution is more normally distributed.
+brussels_correl %>% 
+  ggplot(aes(x=log(price_4nights))) +
+  geom_histogram() +
+  xlim(4,8)+
+  labs(title="The log distribution of the price of a 4 day-stay in Brussels", subtitle = "This log distribution is useful because it resembles more a normal distribution")
+
 ```
 
-The `country_data` and `continent_data` have been created with the code below
+Moving forward, we will make use of the log(price_4nights) variable (for normal distribution purposes)
+
+We are going to build an initial model with some factors that belong to the same family, and then we are going to build on this initial model by adding more variables in a second model, and so on and so forth. We will analyze the significance of the parameters as well as test for multicollinearity after each individual model, however we will only drop variables at the end, once the final model is reached, through a general-to-specific method of selection of parameters.
+
+
+## Model 1: Let's start out easy.
+
+Let us see the impact of the number of beds and bathrooms on the overall price of a 4 night stay in Brussels. Technically speaking the statistics being shown here under are about the log of price and not price itself, in order to assess the concrete effect on the "normal" price one would need to take the exponent of the coefficient value displayed and then subtract 1 and the multiply that by 100 in order to get a percentage impact on price: (exp(coeff)-1)*100= impact in %.
+
 
 ```{r}
-country_data <- gapminder %>% 
-            filter(country == "United Kingdom")  
+#Install package to run autoplot during model exploration.
+library(autoplotly)
 
-continent_data <- gapminder %>% 
-            filter(continent == "Europe")
+model_database <- merge(brussels_correl, listings_cleaned, sort=TRUE)
+
+model_1 <- lm((price_4nights_log)~ 
+              bedrooms+
+              beds+
+              bathrooms,
+              data = model_database)
+
+#We want to analyse how our model performs and how individual factors effect it.
+msummary(model_1)
+
+car::vif(model_1)
 ```
 
-Below is the code for a plot which examines the life expectancy over time for the United Kingdom.
 
-```{r, lifeExp_one_country}
-plot1 <- ggplot(data = country_data, mapping = aes(x = year, y = lifeExp)) + geom_point() + geom_smooth(se = FALSE) + NULL 
-print(plot1)
+The overall impact of the beds, bedrooms and bathrooms combination can explain 19.4% of the entire price of a 4-day stay. When it comes to the parameters individually the beds, bedrooms and bathrooms factors are statistically significant with a p-value being very close to 0 and coefficient estimates of 0.133, 0.169 and -0.089 respectively. It is interesting to note that the number of bathrooms reduce the price of the stay overall, this can be understood intuitively since the more the bathrooms the more people the property can accommodate and hence the individual price would decrease, especially because the more people there is the less private the location becomes.
+
+## Model 2: Will we be alone or do we have to share? 
+
+Now we will see the effect of the different room types on the log of prices.
+
+
+```{r}
+model_2 <- lm((price_4nights_log)~
+              bathrooms+
+              bedrooms+
+              beds+
+              room_type,
+              data = model_database)
+
+msummary(model_2)
+car::vif(model_2)
 ```
 
-To make the plot more informative , I've extended plot1 to include a title, subtitle and axis labels.
 
-```{r, lifeExp_one_country_with_label}
-plot1 <- ggplot(data = country_data, mapping = aes(x = year, y = lifeExp)) + 
-  geom_point() + 
-  geom_smooth(se = FALSE) + 
-  labs(title = "UK Life Expectancy Over Time", subtitle = "Steady Increase In Life Expectancy", x = "Year", y = "Life Expectancy") + 
-  NULL 
-print(plot1)
+As we can see the room type does impact the prices, since the R-squared is 0.365. Here, all the room types are statistically significant with t-values far away from the mean. It can also be said that hotel rooms tend to be more expensive than the rest since it is the only type of room driving the price up, and the two other room types here are less appreciated hence they drive the price down. That effect was expected though because a Private room and a Shared room imply less privacy.
+
+
+## Model 3: Where do we end up living? 
+
+Now that we know that room type is an important factor let us accumulate it with the different property types available.
+
+
+```{r}
+model_3 <- lm((price_4nights_log)~ 
+              bathrooms+
+              bedrooms+
+              beds+
+              room_type + 
+              property_type,
+              data = model_database)
+
+msummary(model_3)
 ```
 
-Next, I have produced a second plot which examines the life expectancy of each country within Europe. 
 
-```{r lifeExp_one_continent}
-plot2 <- ggplot(data = continent_data , mapping = aes(x = year , y = lifeExp  , colour = country)) +
- geom_point() +
-  geom_smooth(se = FALSE) + 
-  labs(title = "European Life Expectancy Trends", subtitle = "Varying Degree of Increase", x = "Year", y = "Life Expectancy") +
-    NULL
-print(plot2)
+There are a lot of different property types! A very positive aspect of this output is that our R-squared improved by 0.049, up from 0.365 to 0.414, which means that overall property types are significant even though some individual ones are not, for example: Bed & Breakfast, Camper/RV, Earth House, Farm Stay, Guest Suite, Hostel, Serviced Apartment, Tiny house and Villas all have high p-values rendering them insignificant statistically speaking, this is very probably due to the rarity of these properties in Brussels increasing the probability of their observation being outliers. However, we will keep all of them in the model because property types are crucial for our analysis.
+
+## Model 4: What have other people said about the listing?
+
+Now that we established that the room and property types are important, let us see how the review scores impact the potential log(price) and price of an AirBnB in Brussels.
+
+
+```{r}
+model_4 <- lm((price_4nights_log)~ 
+              bathrooms+
+              bedrooms+
+              beds+
+              room_type + 
+              property_type +
+              review_scores_rating,
+              data = model_database)
+
+msummary(model_4)
+car::vif(model_4)
 ```
 
-I have then extended my analysis beyond Europe to incorporate all countries from the original gapminder data. Each continent has been grouped within the plot to make it more reader friendly.
 
-```{r lifeExp_facet_by_continent}
-plot3 <- ggplot(data = gapminder , mapping = aes(x = year , y = lifeExp , colour= country))+ geom_point()+ 
-  geom_smooth(se = FALSE) +
-  facet_wrap(~continent) + theme(legend.position="none") + 
-  labs(title = "Life Expectancy Trends by Continent", subtitle = "Increases Across All Continents With Some Outliers", x = "Year", y = "Life Expectancy") +
-  NULL
-print(plot3)
+Once again the R-squared metric increased, this time it improved by 0.052 which means that ratings do have an considerable impact on the prices and more specifically the log(prices). This parameter is also statistically significant (by looking at its p-value) even though its general coefficient estimation is not as large as most of the other room and property types. This positive relationship was to be expected, but what is surprising is how low the estimated coefficient is: 0.0038 meaning a 0.3821% (=(exp(0.003814)-1)*100) impact on the actual price.
+
+
+## Model 5: Is the host a Super Hero?
+
+Airbnb allows some property managers to become Superhosts and have their properties be put forward thanks to a little eye-catching badge that pops up next to each of their properties. In order to obtain this rank one must provide excellent services and experiences for their guests.
+
+
+```{r}
+model_5 <- lm((price_4nights_log)~ 
+              bathrooms+
+              bedrooms+
+              beds+
+              room_type + 
+              property_type +
+              review_scores_rating +
+              host_is_superhost,
+              data = model_database)
+
+msummary(model_5)
+car::vif(model_5)
 ```
 
-My analysis from the findings is explored below :
 
-Overall there has, in general been an increase in life expectancy across all continents. This, from my understanding will be due to general improvements in medical care, access to medical care and the introduction of crucial vaccines / medicine. Further reasons are improved sanitation, housing conditions and education. 
+From looking at the overall fit of the model we can conclude that the host being a super host does make a difference since the R-squared fit of our model increased by 0.005. This parameter passes the significance test with its p-value being very close to 0, it also has a positive coefficient estimation meaning that it does indeed drive up the price of a 4 nights stay in Brussels. This price premium can be explained by the desire of the client to exchange with more reliable home owners. 
+Now that we have accumulated a lot of parameters we should start checking more closely the global variance inflation factors, as a rule of thumb if a factor is above 5 then there is risk of multicollinearity and when a factor exceeds 10 then the variable causes a severe distortion of the actual model predictive performance. Here, in model 5 no variable are remotely close to a 5 GVIF, we can therefore continue to build upon it.
 
-In Europe the increase is in general more stable with most countries starting off with a life expectancy of around 60 or above. They have then steadily increased from here which indicates that elements such as those mentioned above continue to benefit European countries. In particular, I believe that increased education surrounding health awareness will have had a significant impact. For example , increased education surrounding the harmful effects of certain foods, alcohol and smoking will all have had a positive effect. 
+## Model 6: Is the host real or fake?
 
-In Oceania, life expectancy trends have very steadily increased over time reflecting the idea that Oceania has always had a commendable life expectancy rate. The gains over time could possibly be due to improvements in healthcare services. For example , improvements in the medicine available to Oceania residents will have aided them significantly as deaths due to previously fatal illnesses will have fallen. 
-
-In Asia and the Americas there is huge disparity in terms of life expectancy rates by country. All have increased over time however many countries have not had as sharp an increase as others. This reflects the idea that in Asia & the Americas there are many countries significantly behind their counterparts. This is probably due to the presence of severe income inequality where most people suffer in abject poverty. The presence of severe poverty means people won't have access to education, proper nutrition and healthcare thus leading to many deaths. 
-
-In Africa there has been a sharp rise in rates for many countries. I suspect this is primarily down to international aid efforts with other countries and organisations working hard to improve sanitation, housing , access to healthcare and the wider economies of African countries. One other reason for the sharp rise is the creation of critical vaccines. For example, Polio which previously took millions of lives has been eradicated by the presence of a vaccine. There are some countries which increase their rate but then it falls significantly . This could be explained by a number of reasons. Firstly, in many African countries there have been severe internal wars which have led to the deaths of many. Furthermore, initial increases may be stunted by the presence of corrupt governments which hold back the economic progress. 
-
-# Task 3: 
-
-I will now look at the results of the Brexit vote using the code below. First , I'll read the data before then taking a quick glimpse.
-
-```{r load_brexit_data, warning=FALSE, message=FALSE}
-brexit_results <- read_csv(here::here("Data","brexit_results.csv"))
+Let us see if the fact the number of listings the host manages impacts the logged price of the 4 night stay in Brussels.
 
 
-glimpse(brexit_results)
+```{r}
+model_6 <- lm((price_4nights_log)~ 
+              bathrooms+
+              bedrooms+
+              beds+
+              room_type + 
+              property_type +
+              review_scores_rating +
+              host_is_superhost+
+              host_listings_count,
+              data = model_database)
+
+msummary(model_6)
+car::vif(model_6)
 ```
 
-I'll now create two plots to get a greater sense of the data. These two plots will explore the % share of those who voted in favour of Brexit across constituencies. The first plot will be a histogram and the second will be a density plot.
 
-```{r brexit_histogram, warning=FALSE, message=FALSE}
-plot4 <- ggplot(brexit_results, aes(x = leave_share)) +
-  geom_histogram(binwidth = 2.5) + 
-  labs(title = "Histogram : % Votes In Favour of Brexit Across Constituencies", subtitle = "Leave Share Distribution", x = "Leave Share", y = "Frequency") 
-print(plot4)
+Once again the the number of listings of the host does have a very slight, but significant, impact on the log(price_4nights) variable. Just like between each model, R-squared increased, even though it is not the biggest increase, the R-squared measure gained 0.008 in explaining the underlying variance of the dependent variable. 
+
+## Model 7: Is the host going to catfish us?
+
+We will now analyse the potential effects on log(price_4nights) of the cancellation policy of the host. In our data there are 4 possible values for cancellation policy, either: "flexible", "moderate", "strict_14_with_grace_period", and "super_strict_60".
 
 
-plot5 <- ggplot(brexit_results, aes(x = leave_share)) +
-  geom_density()+
-  labs(title = "Density Plot : % Votes In Favour of Brexit Across Constituencies ", subtitle = "Leave Share Distribution", x = "Leave Share", y = "Density") 
-print(plot5)
+```{r}
+model_7 <- lm((price_4nights_log)~ 
+              bathrooms+
+              bedrooms+
+              beds+
+              room_type + 
+              property_type +
+              review_scores_rating +
+              host_is_superhost+
+              host_listings_count+
+              cancellation_policy,
+              data = model_database)
 
+msummary(model_7)
+car::vif(model_7)
 ```
 
-Being UK born I followed the Brexit ordeal closely. The primary argument of the pro-Brexit camp was that our immigration policy within the EU was too relaxed. This created a strong anti-immigration rhetoric. To explore this idea further I'm going to find the correlation between the proportion of native born residents in a constituency and its share of leave voters.
 
-```{r brexit_immigration_correlation}
-brexit_results %>% 
-  select(leave_share, born_in_uk) %>% 
-  cor()
+Our model has seen an increase in its R-squared of 0.007. I think it would also be interesting to look at the adjusted R-squared which has a slightly lower value of 0.483. The adjusted R-squared is an altered version of R-squared that is adjusted for the number of predictors in the model. Since there are a lot of predictors now in our model, we shall look at the adjusted R-squared more than at R-squared. In brief, model 7 explains 48.3% of the variance in log(price_4nights).  
+
+
+## Model 8: Will we end up on the wrong side of the river?
+
+In Brussels there are some areas that are more prized than others, due to their proximity of famous historical places, or the charm of the neighbourhood etc... Here we designed a way to classify the different neighbourhoods in Brussels in function of their desirability and attractiveness. Then we shall see if the charm of the neighbourhood has an impact on the log(price_4nights).
+
+
+```{r}
+#First we  create a new dataset: neighbourhood_zones
+neighbourhood_zones<-model_database %>% 
+#Second, we compute the mean price of each neighbourhood by averaging the price of each listing within that neighbourhood.
+  group_by(neighbourhood) %>% 
+  summarise("mean_price"=mean(price)) %>% 
+#Third, we mutate to create a new column within neighbourhood_zones: attractivity, where in function of its mean price the neighbourhood is allocated a number ranging from 1 to 4 where 4 is the more desirable and 1 the least.
+  mutate(attractivity=case_when(
+    mean_price<=65 ~ "1",
+    mean_price>65 & mean_price<=90 ~ "2",
+    mean_price>90 & mean_price<=115 ~ "3",
+    mean_price>115 & mean_price<=140 ~ "4")) %>% 
+#Finally, in order to prepare to change the original data set (model_database) we only want neighbourhood_zones to comprise of 2 columns: the neighbourhood name and its attractivity level.
+  select(neighbourhood,attractivity)
+
+#Now we create an empty column named "attractivity" where each lisitng would be assigned a 1-4 value in function of the attractivity level of its neighbourhood.
+model_database[,c("attractivity")] <- NA
+#The last step is to fill this column appropriately, where the attractivity level matches the neighbourhood, this works similarly to a VLOOKUP in Excel.
+model_database$attractivity <- with(neighbourhood_zones,
+                     attractivity[match(model_database$neighbourhood,
+                                       neighbourhood)])
+
+model_8 <- lm((price_4nights_log)~ 
+              bathrooms+
+              bedrooms+
+              beds+
+              room_type + 
+              property_type +
+              review_scores_rating +
+              host_is_superhost+
+              host_listings_count+
+              cancellation_policy+
+              attractivity,
+              data = model_database)
+
+msummary(model_8)
+car::vif(model_8)
 ```
 
-The correlation is almost 0.5, which shows that the two variables are positively correlated. 
 
-I'm now going to create a scatterplot between these two variables with a best fit line included. This will allow us to explore the correlation of these two variables further. 
+The result from this step is very positive! The model's adjusted R-squared increased by 0.023, not only that means that the neighbourhood attractivity held a lot of the information of the log(price_4nights) but also an increase in R-squared signifies that the predictor held more information that improves more the model than would be expected by chance. 
 
-```{r brexit_immigration_plot}
-plot6 <- ggplot(brexit_results, aes(x = born_in_uk, y = leave_share)) +
-  geom_point(alpha=0.3) +
-  geom_smooth(method = "lm") +
-  theme_bw() +
-  labs(title = "Scatterplot : Relationship Between Leave Share & Proportion of Native Born Residents", subtitle = "Clear Evidence of Correlation" , x= "Proportion of Native Born Residents", y= "Leave Share") + 
-  NULL
-print(plot6)
+## Comparing model results
+
+As we added predictors in our models the estimated coefficients could change and their p-values too. Hence, it would be interesting to visualize these changes.
+
+
+```{r}
+#Compare all models
+huxtable::huxreg(model_1, model_2, model_3, model_4, model_5, model_6, model_7, model_8)
 ```
 
-My analysis from the findings is explored below:
 
-The scatterplot clearly supports the idea that as the percentage of native born residents in constituencies increased, so did the proportion of pro-Brexit votes. As such, the plot shows that the two variables are positively correlated. As someone from the UK , the correlation doesn't surprise me as the Brexit campaign was fueled by creating a very ugly narrative that tried to suggest that immigration policy was too relaxed and that those coming to the UK were stealing jobs. This of course is a silly argument and all evidence points to the idea that immigration is crucial for the economy and in general a necessity for any country to thrive. The problem with the fearmongering was that it struck a cord with many and as the scatterplot shows, it particualrly resonated with British born residents. This is perhaps due to a sense of strong patriotism which meant many found it easy to be swallowed by the anti-immigration rhetoric. Those residents who weren't born in Britain will understand better than most how valuable immigration can be as they've seen its benefits first hand. As such, those constituencies with more non-native born residents were naturally more likely to vote against Brexit.  
- 
- Some additional Info is included below:
+There are some interesting phenomena, some variables started off with a negative estimated coefficient but ended up with a positive one, just like bathrooms, and some property types. Another interesting aspect of this comparative table is to visualize the evolution of R-squared as we added more predictors, it started as a meager 0.194 and ended over 0.5, however we are not done yet with our model there is one last step.
 
-- Who did you collaborate with: PABLO CARRERA LORENZO
-- Approximately how much time did you spend on this problem set: 3 HOURS
-- What, if anything, gave you the most trouble: SETTING UP R & THE PACKAGES ON MAC 
+Overall, there were no occurrences of multicollinaerity nor statistical insignificance with regards to predictor as a whole, for example some individual property types were statistically insignificant but we decided to keep them in the model since they are the inherent nature of Airbnb listings. 
+
+
+## Diagnosing the Final Model
+
+The last step towards our final model is to analyze the residuals of our final model: model 8.
+
+
+```{r}
+autoplot(model_8)
+```
+
+
+Let us analyse the four graphs plotted above.
+
+First: Residuals against Fitted values:
+Here, on the x-axis are the fitted values and on the y-axis the residuals. It looks like the residuals are randomly distributed, even though they appear to be in a cluster. The fact that they are randomly distributed above and under the estimated regression line means that the assumption that a linear relationship is the most efficicent is reasonable.
+
+Second: Normal Q-Q plot:
+Here we graph the Standardized residuals against Theoretical Quantiles. This plot allows us to check if the data we manipulated thus far comes from a normal distribution. If it were to be sourced from a perfectly normal distribution all of the data points would lie on the dotted line. Here we can see that there the data that curves off in the extremities of the of the graph, this shows us that our data has more extreme values than expected from a truly normal distribution.
+
+Third: Scale-Location plot:
+This graph shows the Square Root of Standardized residuals against fitted values. We can use it to check for homoskedasticity, which is a term to describe the assumption of equal variance between the predictors and the dependent variable. On this representation the the data seems to be randomly distributed, the fitted line should be straight and very slightly upwards sloping (i.e. quite flat) due to some influential points towards the right extreme of the graph.
+
+Fourth: Constant Leverage: Residuals vs Factor Levels:
+This plot's goal is to show any outliers in our data. Here we do not even see the Cook's distance curves which is a good sign! Also we can note that besides some isolated cases, there are no clusters of points that have both a high residual and leverage.
+
+
+Overall, from these tests we can conclude that our data: 1. does come from a normal distribution with more extreme values than expected (some would say fat tails), 2. satistfies the assumption of homoskedasticity, 3. a linear relationship is most efficient way to express a regression line, and finally that 4. there are no particular outliers to worry about.
+
+
+
+**Cost of staying in an Airbnb in Brussels for 2 people, 4 nights, 10 reviews, above 90 rating, private room.**
+
+```{r}
+
+#Create a new dataset with all the requirements: 
+
+set.seed(1234)
+
+requirements <- model_database %>% 
+  filter(room_type == "Private room", 
+         number_of_reviews >= 10, 
+         review_scores_rating >= 90, 
+         accommodates >= 2, 
+         minimum_nights <=4) %>% 
+  sample_n(size=20)
+
+
+
+#We need to intiate our model. We do so by using antijoin
+
+prediction_data <- anti_join(model_database, requirements)
+
+
+#Run the final model on this prediction dataset.
+
+prediction_data <- lm(log(price_4nights)~ 
+              bathrooms+
+              bedrooms+
+              beds+
+              room_type + 
+              property_type +
+              review_scores_rating +
+              host_is_superhost+
+              host_listings_count+
+              cancellation_policy+
+              attractivity,
+              data = model_database)
+
+#Initiating the forecast model using the predict function
+forecast_cost <- predict(prediction_data, newdata = requirements, interval = "confidence")
+
+#Forecasting the cost of a 4 night stay, whilst fulfilling the requirements
+forecast_cost <- as.data.frame(forecast_cost) %>% 
+  mutate(exp_fit = exp(fit),
+         exp_lower = exp(lwr),
+         exp_upper = exp(upr),
+         real_price = requirements$price_4nights,
+         predic_error = real_price - exp_fit)
+
+#Having predicted the cost and not the log(cost), we can print the mean and standard deviation of our forecasts.
+mean(forecast_cost$exp_fit)
+sd(forecast_cost$exp_fit)
+
+#We compute the lower and upper bounds of the confidence interval
+confidence_interval_lower<-mean(forecast_cost$exp_fit)-1.96*sd(forecast_cost$exp_fit) 
+confidence_interval_upper<-mean(forecast_cost$exp_fit)+1.96*sd(forecast_cost$exp_fit)
+
+#In order to display the data nicely we decided to create a table, here are the two vectors making up our dataframe.
+values<-c(mean(forecast_cost$exp_fit),sd(forecast_cost$exp_fit),confidence_interval_lower,confidence_interval_upper)
+headers<-c("mean","sd","cf_l","cf_u")
+
+#We actually create the dataframe
+confidence.data<-data.frame(headers,values) %>% 
+#We pivot wider to have the headers as columns and all the values in one row
+  pivot_wider(names_from=headers,
+              values_from=values)
+#Making it look nice
+
+  confidence.data %>% 
+  kbl() %>% 
+  kable_material(c("striped", "hover"))
+```
+# Conclusion
+
+Overall, we can say that with 95% confidence, the cost of travelling to Brussels for a 4-night, 2 people trip to a private room, highly reviewed will fall between 134 and 227 EUR. The estimated cost is of 181EUR. We have cross-checked with listings on AirBnB which seem to confirm our confidence interval. 
+
+However, in the future we would like to repeat such a model using the learnings of this model. For instance, we would make use of a bigger dataset, because even though we started out with around 8000 observations, after having cleaned and sorted it, we only had about 4000 observations remaining. In addition, most variables were of categorical type and thus not as beneficial to our regression model as we would have liked. On the other hand, we strongly believe that something like travel is heavily influenced by qualitative variables so we need to find a better way to represent such in our analysis. 
+
+The final limitation we would like to point out is the fact that our data is as of July 2020. This means it has also been heavily influenced by the presence of the global pandemic. In our future model, We would look at a bigger dataset that considers a longer time frame to offset the effect of events like Covid-19, which is an undeniable source of individual outliers. 
+
