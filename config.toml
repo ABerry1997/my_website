@@ -105,7 +105,7 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "Inverted Yield Curve"
-      subtitle = "LRecession Indicator?"
+      subtitle = "Recession Indicator?"
       image = "pic03.jpg"
       url = "blogs/blog8"
 
