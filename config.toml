@@ -101,7 +101,7 @@ disqusShortname = ""
       title = "AirBnB Regression Model"
       subtitle = "Cost Prediction"
       image = "pic08.jpg"
-      url = "blogs/blog7"
+      url = "blogs/blog8"
 
     [[params.tiles.showcase]]
       title = "Yield Curve Inversion"
