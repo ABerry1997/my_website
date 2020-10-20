@@ -110,12 +110,12 @@ disqusShortname = ""
       url = "blogs/blog5"
       
     [[params.tiles.showcase]]
-      title = "Stock Analysis"
-      subtitle = "?????"
-      image = "pic04.jpg"
-      url = "blogs/blog4"
+      title = "DJIA Stock Analysis"
+      subtitle = "Risk and Return Profile"
+      image = "stockmarket.jpg"
+      url = "blogs/blog7"
 
-    [[params.tiles.showcase]]
+    #[[params.tiles.showcase]]
       title = "Consequat"
       subtitle = "Ipsum Dolor Sit Amet"
       image = "pic05.jpg"
@@ -184,7 +184,7 @@ disqusShortname = ""
   # Footer section
   [params.footer]
     enable = true
-    copyright = "Company Name"
+    copyright = "AlastairBerry"
 
     # Uses font awesome icons
     [[params.footer.social]]
