@@ -99,8 +99,8 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "AirBnB Regression Model"
-      subtitle = "Feugiat Amet Tempus"
-      image = "pic14.jpg"
+      subtitle = "Cost Prediction"
+      image = "pic08.jpg"
       url = "blogs/blog7"
 
     [[params.tiles.showcase]]
