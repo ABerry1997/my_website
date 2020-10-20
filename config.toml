@@ -106,7 +106,7 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "Yield Curve Inversion"
       subtitle = "Recession Indicator?"
-      image = "pic03.jpg"
+      image = "recession.jpg"
       url = "blogs/blog5"
       
     [[params.tiles.showcase]]
@@ -116,10 +116,10 @@ disqusShortname = ""
       url = "blogs/blog7"
 
     #[[params.tiles.showcase]]
-      title = "Consequat"
-      subtitle = "Ipsum Dolor Sit Amet"
-      image = "pic05.jpg"
-      url = "blogs/ipsum"
+    # title = "Consequat"
+     # subtitle = "Ipsum Dolor Sit Amet"
+     # image = "pic05.jpg"
+     # url = "blogs/ipsum"
 
      #[[params.tiles.showcase]]
       # title = "Etiam"
@@ -207,7 +207,7 @@ disqusShortname = ""
       url= "https://www.linkedin.com/in/alastairberry/"
       label = "LinkedIn"
 
-    [[params.footer.quicklinks]]
-      text = "Design: "
-      url= "https://www.html5up.net"
-      alt = "HTML5 UP"
+   # [[params.footer.quicklinks]]
+     # text = "Design: "
+    #  url= "https://www.html5up.net"
+    #  alt = "HTML5 UP"
