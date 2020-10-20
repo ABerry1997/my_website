@@ -1,0 +1,174 @@
+---
+title: 'Pre-programme Assignment 1'
+author: "ALASTAIR BERRY"
+date: "12/9/20"
+output:
+  html_document:
+    highlight: zenburn
+    theme: flatly
+    toc: yes
+    toc_float: yes
+  word_document:
+    toc: yes
+---
+
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(gapminder)  # gapminder dataset
+library(here)
+```
+
+# My Life So Far 
+
+## The Beginning 
+
+Hi there, it’s a pleasure to meet you and I’m looking forward to what is to come here at LBS. My name is Alastair Berry and I’m studying on the *Masters in Financial Analysis* program [LBS MFA](https://www.london.edu/masters-degrees/masters-in-financial-analysis) at **London Business School** .  For the first 18 years of my life I lived in a small countryside town in Scotland called Castle Douglas. It’s a lovely town surrounded by picturesque scenery, the sea and all the nature anyone could ask for . My favourite castle is pictured here : ![Threave Castle](https://dimg.visitscotland.com/wsimgs/dh021007036.jpg)
+From the age of six I played football and eventually got pretty good at it. Most of my teenage years were spent balancing my academics with high level sport and at the age of 17 I signed my first professional contract for Queen of The South. However I quickly realised that pursuing football as a career was a huge risk so I opted to pursue a football scholarship in America. 
+
+### Outside My Comfort Zone 
+
+Attending George Washington University in Washington , DC was the best decision I have made to date . While the first few months were tough I grew to love it. I enjoyed the diversity in particular as I was able to meet people from all over the world and learn from their unique experiences. Looking back I'm glad I put myself outside my comfort zone and got on that plane . It opened up doors for me that I didn't even know existed. Football wasn't going well and after two shoulder surgeries I called it quits on my dream of becoming a footballer. Studying finance and getting good grades afforded me the opportunity to pursue a job in Wealth Management. While I enjoyed the client facing aspect I wanted a more demanding and quantitative experience so decided to take the Chartered Financial Analyst Level 1 exam [CFA](https://www.cfainstitute.org). Luckily I passed and as a result was able to apply to **London Business School** without having to take the GMAT . What a relief !
+
+#### Back Home In The UK 
+
+Having been accepted to LBS , my life changed drastically. I now have the opportunity of a lifetime in front of me and I'm looking forward to making the most out of it. I've been blown away by how welcoming my classmates have been and how willing they are to help. There's a real community spirit here at LBS and I feel priviliged to be a part of it. 
+
+
+# Task 2: 
+
+Using the gapminder dataset we're going to take a closer look at the life expectancy rates of countries from around the world. 
+
+```{r}
+```
+
+
+```{r}
+glimpse(gapminder)
+```
+
+
+```{r}
+head(gapminder, 20) 
+```
+
+The `country_data` and `continent_data` have been created with the code below
+
+```{r}
+country_data <- gapminder %>% 
+            filter(country == "United Kingdom")  
+
+continent_data <- gapminder %>% 
+            filter(continent == "Europe")
+```
+
+Below is the code for a plot which examines the life expectancy over time for the United Kingdom.
+
+```{r, lifeExp_one_country}
+plot1 <- ggplot(data = country_data, mapping = aes(x = year, y = lifeExp)) + geom_point() + geom_smooth(se = FALSE) + NULL 
+print(plot1)
+```
+
+To make the plot more informative , I've extended plot1 to include a title, subtitle and axis labels.
+
+```{r, lifeExp_one_country_with_label}
+plot1 <- ggplot(data = country_data, mapping = aes(x = year, y = lifeExp)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE) + 
+  labs(title = "UK Life Expectancy Over Time", subtitle = "Steady Increase In Life Expectancy", x = "Year", y = "Life Expectancy") + 
+  NULL 
+print(plot1)
+```
+
+Next, I have produced a second plot which examines the life expectancy of each country within Europe. 
+
+```{r lifeExp_one_continent}
+plot2 <- ggplot(data = continent_data , mapping = aes(x = year , y = lifeExp  , colour = country)) +
+ geom_point() +
+  geom_smooth(se = FALSE) + 
+  labs(title = "European Life Expectancy Trends", subtitle = "Varying Degree of Increase", x = "Year", y = "Life Expectancy") +
+    NULL
+print(plot2)
+```
+
+I have then extended my analysis beyond Europe to incorporate all countries from the original gapminder data. Each continent has been grouped within the plot to make it more reader friendly.
+
+```{r lifeExp_facet_by_continent}
+plot3 <- ggplot(data = gapminder , mapping = aes(x = year , y = lifeExp , colour= country))+ geom_point()+ 
+  geom_smooth(se = FALSE) +
+  facet_wrap(~continent) + theme(legend.position="none") + 
+  labs(title = "Life Expectancy Trends by Continent", subtitle = "Increases Across All Continents With Some Outliers", x = "Year", y = "Life Expectancy") +
+  NULL
+print(plot3)
+```
+
+My analysis from the findings is explored below :
+
+Overall there has, in general been an increase in life expectancy across all continents. This, from my understanding will be due to general improvements in medical care, access to medical care and the introduction of crucial vaccines / medicine. Further reasons are improved sanitation, housing conditions and education. 
+
+In Europe the increase is in general more stable with most countries starting off with a life expectancy of around 60 or above. They have then steadily increased from here which indicates that elements such as those mentioned above continue to benefit European countries. In particular, I believe that increased education surrounding health awareness will have had a significant impact. For example , increased education surrounding the harmful effects of certain foods, alcohol and smoking will all have had a positive effect. 
+
+In Oceania, life expectancy trends have very steadily increased over time reflecting the idea that Oceania has always had a commendable life expectancy rate. The gains over time could possibly be due to improvements in healthcare services. For example , improvements in the medicine available to Oceania residents will have aided them significantly as deaths due to previously fatal illnesses will have fallen. 
+
+In Asia and the Americas there is huge disparity in terms of life expectancy rates by country. All have increased over time however many countries have not had as sharp an increase as others. This reflects the idea that in Asia & the Americas there are many countries significantly behind their counterparts. This is probably due to the presence of severe income inequality where most people suffer in abject poverty. The presence of severe poverty means people won't have access to education, proper nutrition and healthcare thus leading to many deaths. 
+
+In Africa there has been a sharp rise in rates for many countries. I suspect this is primarily down to international aid efforts with other countries and organisations working hard to improve sanitation, housing , access to healthcare and the wider economies of African countries. One other reason for the sharp rise is the creation of critical vaccines. For example, Polio which previously took millions of lives has been eradicated by the presence of a vaccine. There are some countries which increase their rate but then it falls significantly . This could be explained by a number of reasons. Firstly, in many African countries there have been severe internal wars which have led to the deaths of many. Furthermore, initial increases may be stunted by the presence of corrupt governments which hold back the economic progress. 
+
+# Task 3: 
+
+I will now look at the results of the Brexit vote using the code below. First , I'll read the data before then taking a quick glimpse.
+
+```{r load_brexit_data, warning=FALSE, message=FALSE}
+brexit_results <- read_csv(here::here("Data","brexit_results.csv"))
+
+
+glimpse(brexit_results)
+```
+
+I'll now create two plots to get a greater sense of the data. These two plots will explore the % share of those who voted in favour of Brexit across constituencies. The first plot will be a histogram and the second will be a density plot.
+
+```{r brexit_histogram, warning=FALSE, message=FALSE}
+plot4 <- ggplot(brexit_results, aes(x = leave_share)) +
+  geom_histogram(binwidth = 2.5) + 
+  labs(title = "Histogram : % Votes In Favour of Brexit Across Constituencies", subtitle = "Leave Share Distribution", x = "Leave Share", y = "Frequency") 
+print(plot4)
+
+
+plot5 <- ggplot(brexit_results, aes(x = leave_share)) +
+  geom_density()+
+  labs(title = "Density Plot : % Votes In Favour of Brexit Across Constituencies ", subtitle = "Leave Share Distribution", x = "Leave Share", y = "Density") 
+print(plot5)
+
+```
+
+Being UK born I followed the Brexit ordeal closely. The primary argument of the pro-Brexit camp was that our immigration policy within the EU was too relaxed. This created a strong anti-immigration rhetoric. To explore this idea further I'm going to find the correlation between the proportion of native born residents in a constituency and its share of leave voters.
+
+```{r brexit_immigration_correlation}
+brexit_results %>% 
+  select(leave_share, born_in_uk) %>% 
+  cor()
+```
+
+The correlation is almost 0.5, which shows that the two variables are positively correlated. 
+
+I'm now going to create a scatterplot between these two variables with a best fit line included. This will allow us to explore the correlation of these two variables further. 
+
+```{r brexit_immigration_plot}
+plot6 <- ggplot(brexit_results, aes(x = born_in_uk, y = leave_share)) +
+  geom_point(alpha=0.3) +
+  geom_smooth(method = "lm") +
+  theme_bw() +
+  labs(title = "Scatterplot : Relationship Between Leave Share & Proportion of Native Born Residents", subtitle = "Clear Evidence of Correlation" , x= "Proportion of Native Born Residents", y= "Leave Share") + 
+  NULL
+print(plot6)
+```
+
+My analysis from the findings is explored below:
+
+The scatterplot clearly supports the idea that as the percentage of native born residents in constituencies increased, so did the proportion of pro-Brexit votes. As such, the plot shows that the two variables are positively correlated. As someone from the UK , the correlation doesn't surprise me as the Brexit campaign was fueled by creating a very ugly narrative that tried to suggest that immigration policy was too relaxed and that those coming to the UK were stealing jobs. This of course is a silly argument and all evidence points to the idea that immigration is crucial for the economy and in general a necessity for any country to thrive. The problem with the fearmongering was that it struck a cord with many and as the scatterplot shows, it particualrly resonated with British born residents. This is perhaps due to a sense of strong patriotism which meant many found it easy to be swallowed by the anti-immigration rhetoric. Those residents who weren't born in Britain will understand better than most how valuable immigration can be as they've seen its benefits first hand. As such, those constituencies with more non-native born residents were naturally more likely to vote against Brexit.  
+ 
+ Some additional Info is included below:
+
+- Who did you collaborate with: PABLO CARRERA LORENZO
+- Approximately how much time did you spend on this problem set: 3 HOURS
+- What, if anything, gave you the most trouble: SETTING UP R & THE PACKAGES ON MAC 
