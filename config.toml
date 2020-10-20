@@ -119,11 +119,11 @@ disqusShortname = ""
       image = "stockmarket.jpg"
       url = "blogs/blog7"
 
-    [[params.tiles.showcase]]
-      title = "My Resume"
-      subtitle = "...."
-      image = "stockmarket.jpg"
-      url = "myresume/myresume1"
+    #[[params.tiles.showcase]]
+     # title = "My Resume"
+     # subtitle = 
+     # image = "stockmarket.jpg"
+     # url = "myresume/myresume1"
       
     #[[params.tiles.showcase]]
     # title = "Consequat"
