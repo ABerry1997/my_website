@@ -107,13 +107,13 @@ disqusShortname = ""
       title = "Inverted Yield Curve"
       subtitle = "Recession Indicator?"
       image = "pic03.jpg"
-      url = "blogs/blog8"
+      url = "blogs/blog8""
 
     [[params.tiles.showcase]]
-      title = "Ipsum"
-      subtitle = "Nisl Sed Aliquam"
+      title = "Dow Jones Analysis"
+      subtitle = "?????"
       image = "pic04.jpg"
-      url = "blogs/blogx"
+      url = "blogs/blog9"
 
     [[params.tiles.showcase]]
       title = "Consequat"
