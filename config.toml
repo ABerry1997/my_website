@@ -98,8 +98,8 @@ disqusShortname = ""
       url = "blogs/blog6"
 
     [[params.tiles.showcase]]
-      title = "AirBnB Regression Model"
-      subtitle = "Cost Prediction"
+      title = "Airbnb Project"
+      subtitle = "Cost Prediction Using Regression Analysis"
       image = "pic08.jpg"
       url = "blogs/blog8"
 
