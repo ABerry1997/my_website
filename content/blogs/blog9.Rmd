@@ -15,7 +15,7 @@ title: Analysing DJIA Returns
 knitr::opts_chunk$set(
   message = FALSE, 
   warning = FALSE, 
-  tidy=FALSE,    # display code as typed
+  tidy=FALSE,     # display code as typed
   size="small")   # slightly smaller font for code
 options(digits = 3)
 
@@ -23,8 +23,10 @@ options(digits = 3)
 knitr::opts_chunk$set(
   fig.width=6.75, 
   fig.height=6.75,
-  fig.align = "center")
+  fig.align = "center"
+)
 ```
+
 
 ```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
 library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
@@ -42,16 +44,26 @@ library(purrr)
 library(lubridate) #to handle dates
 ```
 
-# Returns of Financial Stocks
 
-In order to perform analyse on financial stocks, I have downloaded the following dataset provided by the NYSE.
+
+
+# Returns of financial stocks
+
+
+> You may find useful the material on [finance data sources](https://mfa2021.netlify.app/reference/finance_data/). 
+
+We will use the `tidyquant` package to download historical data of stock prices, calculate returns, and examine the distribution of returns. 
+
+We must first identify which stocks we want to download data for, and for this we must know their ticker symbol; Apple is known as AAPL, Microsoft as MSFT, McDonald's as MCD, etc. The file `nyse.csv` contains 508 stocks listed on the NYSE, their ticker `symbol`, `name`, the IPO  (Initial Public Offering) year, and the sector and industry the company is in.
+
 
 ```{r load_nyse_data, message=FALSE, warning=FALSE}
-nyse <- read_csv(here::here("/data","nyse.csv"))
+#nyse <- read_csv(here::here("data","nyse.csv"))
+nyse <- read_csv(file.path("C:/Users/walte/Documents","nyse.csv"))
 
 ```
 
-Based on this dataset, I created a table and a bar plot that show the number of companies per sector, in descending order.
+Based on this dataset, create a table and a bar plot that shows the number of companies per sector, in descending order
 
 ```{r companies_per_sector}
 nyse %>%
@@ -64,60 +76,74 @@ nyse %>%
   summarise(count=n())%>%
   ggplot(aes(x=count, y=reorder(sector,count))) +
   geom_col() +
-  labs(title="Number of companies per sector in NYSE ", 
-       x = "",
-       y = "") +
-  theme_hc()
+  labs(y="")+
+  theme_economist()
+
 
 ```
 
-In order to analyse the 30 stocks that make up the DJIA and the stocks that make up the SP500 ETF, I use the following dataset.
+Next, let's choose the [Dow Jones Industrial Aveareg (DJIA)](https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average) stocks and their ticker symbols and download some data. Besides the thirty stocks that make up the DJIA, we will also add `SPY` which is an SP500 ETF (Exchange Traded Fund).
 
 
 ```{r, tickers_from_wikipedia}
 
 djia_url <- "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average"
 
+#get tables that exist on URL
 tables <- djia_url %>% 
   read_html() %>% 
   html_nodes(css="table")
 
+
+# parse HTML tables into a dataframe called djia. 
+# Use purr::map() to create a list of all tables in URL
 djia <- map(tables, . %>% 
                html_table(fill=TRUE)%>% 
                clean_names())
 
-table1 <- djia[[2]] %>% 
+
+# constituents
+table1 <- djia[[2]] %>% # the second table on the page contains the ticker symbols
   mutate(date_added = ymd(date_added),
+         
+         # if a stock is listed on NYSE, its symbol is, e.g., NYSE: MMM
+         # We will get prices from yahoo finance which requires just the ticker
+         
+         # if symbol contains "NYSE*", the * being a wildcard
+         # then we jsut drop the first 6 characters in that string
          ticker = ifelse(str_detect(symbol, "NYSE*"),
                           str_sub(symbol,7,11),
-                          symbol))
+                          symbol)
+         )
 
+# we need a vector of strings with just the 30 tickers + SPY
 tickers <- table1 %>% 
   select(ticker) %>% 
-  pull() %>% 
-  c("SPY")
+  pull() %>% # pull() gets them as a sting of characters
+  c("SPY") # and lets us add SPY, the SP500 ETF
 
 ```
+
 
 
 
 ```{r get_price_data, message=FALSE, warning=FALSE, cache=TRUE}
+# Notice the cache=TRUE argument in the chunk options. Because getting data is time consuming, # cache=TRUE means that once it downloads data, the chunk will not run again next time you knit your Rmd
 
 myStocks <- tickers %>% 
   tq_get(get  = "stock.prices",
          from = "2000-01-01",
-         to   = "2020-08-31") %>%  
-  group_by(symbol)
+         to   = "2020-08-31") %>%
+  group_by(symbol) 
 
-glimpse(myStocks)
-
+glimpse(myStocks) # examine the structure of the resulting data frame
 ```
 
-In order to perform sound analysis, I now calculate daily, monthly and yearly returns for all stock tickers and create new datasets.
+Financial performance analysis depend on returns; If I buy a stock today for 100 and I sell it tomorrow for 101.75, my one-day return, assuming no transaction costs, is 1.75%. So given the adjusted closing prices, our first step is to calculate daily and monthly returns.
 
 
 ```{r calculate_returns, message=FALSE, warning=FALSE}
-
+#calculate daily returns
 myStocks_returns_daily <- myStocks %>%
   tq_transmute(select     = adjusted, 
                mutate_fun = periodReturn, 
@@ -126,6 +152,7 @@ myStocks_returns_daily <- myStocks %>%
                col_rename = "daily_returns",
                cols = c(nested.col))  
 
+#calculate monthly  returns
 myStocks_returns_monthly <- myStocks %>%
   tq_transmute(select     = adjusted, 
                mutate_fun = periodReturn, 
@@ -134,6 +161,7 @@ myStocks_returns_monthly <- myStocks %>%
                col_rename = "monthly_returns",
                cols = c(nested.col)) 
 
+#calculate yearly returns
 myStocks_returns_annual <- myStocks %>%
   group_by(symbol) %>%
   tq_transmute(select     = adjusted, 
@@ -142,13 +170,12 @@ myStocks_returns_annual <- myStocks %>%
                type       = "arithmetic",
                col_rename = "yearly_returns",
                cols = c(nested.col))
-
 ```
 
-I have created a dataframe and assigned it to a new object, where we summarised monthly returns since 2017-01-01 for each of the stocks and the SPY ETF; min, max, median, mean, SD.
+Create a dataframe and assign it to a new object, where you summarise monthly returns since 2017-01-01 for each of the stocks and `SPY`; min, max, median, mean, SD.
 
 ```{r summarise_monthly_returns}
-
+# YOUR CODE GOES HERE
 summarise_monthly_returns <- myStocks_returns_monthly %>%
   group_by(symbol) %>%
   summarise(min_return=min(monthly_returns),max_return=max(monthly_returns),
@@ -158,55 +185,46 @@ summarise_monthly_returns
 
 ```
 
-I now  plot a density plot for each of the stocks.
 
+Plot a density plot, using `geom_density()`, for each of the stocks
 ```{r density_monthly_returns}
+# YOUR CODE GOES HERE
+  
 myStocks_returns_monthly %>%
   group_by(symbol)%>%
   ggplot(aes(x=monthly_returns))+
     geom_density()+
     facet_wrap(~symbol)+
-    labs(title = "Monthly returns of stock",
-         subtitle = "Density plot showing monthly performance of stock",
-         x = "Monthly return",
-         y = "Density") +
-    theme_hc() 
-```
+    theme_hc()
 
-
-```{r density_monthly_returns}
 myStocks_returns_monthly %>%
   group_by(symbol)%>%
   ggplot(aes(x=monthly_returns,color=symbol))+
     geom_density(fill="white",position="identity")+
     theme_hc()
-```
 
-
-```{r}
-myStocks_returns_monthly %>% 
-  group_by(symbol) %>%
-  summarise(kurtosis=kurtosis(monthly_returns), standard_deviation=STDEV(monthly_returns)) %>% 
+myStocks_returns_monthly %>%
+  group_by(symbol)%>%
+  summarise(kurtosis=kurtosis(monthly_returns), standard_deviation=STDEV(monthly_returns))%>%
   arrange(desc(standard_deviation))
 ```
 
-The density plot provides information about the distribution of returns for each stock. Inferring from the plot, we analyzed both the standard deviation and the kurtosis for each of the distribution chart. In statistics, kurtosis measures the “tailedness” of the probability distribution, while standard deviation measures the amount of variation of the data set. Generally speaking, the stock with the highest kurtosis and the lowest standard deviation would be the least risky, while the stock with the lowest kurtosis and the highest standard deviation would be the riskiest. From the plot and statistics above, the DOW stock is the riskiest, while AXP stock is the least risky.
+What can you infer from this plot? Which stock is the riskiest? The least risky? 
 
-Finally, we produced a plot that shows the expected monthly return of a stock and the risk.
+> TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
+
+Finally, produce a plot that shows the expected monthly return (mean) of a stock on the Y axis and the risk (standard deviation) in the X-axis. Please use `ggrepel::geom_text_repel()` to label each stock with its ticker symbol
 
 ```{r risk_return_plot}
+# YOUR CODE GOES HERE
 summarise_monthly_returns %>%
-  ggplot(aes(x=standard_deviation,y=average_return,label=symbol))+
+  ggplot(aes(x=average_return,y=standard_deviation,label=symbol))+
   geom_point()+
-  ggrepel::geom_text_repel()+
-  labs(title = "Risk vs Return of Stock", 
-       subtitle = "Scatter Plot showing Expected Return over Standard Deviation",
-       x = "Standard Deviation",
-       y = "Expected Return") +
-  theme_hc()
+  ggrepel::geom_text_repel()
+
+
 ```
 
-The general rule in finance is the positive correlation between risk and return. In other words, if a stock has a high expected return, it is also expected to have a high standard deviation. However, in this scatter plot, there is no obvious trend to be identified. Thus, I will compute the correlation between the expected return and the standard deviation.
+What can you infer from this plot? Are there any stocks which, while being riskier, do not have a higher expected return?
 
-The stocks DOW, CSCO, INTC in particular are relatively risky since their standard deviation is among the highest of the set, thus intuitively we would expect to see a relatively high expected return. Instead, these 3 stocks perform relatively poorly in terms of stock returns. When focusing solely on CSCO (CISCO Systems), we can deduct that their past performance over the last 9 months was very volatile. During the Covid-19 period, CISCO experienced increased usage due to work shifting to the virtual space. However, CISCO has since not been able to upkeep this performance, especially due to a strong peer group.
-
+> TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.

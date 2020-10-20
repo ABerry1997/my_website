@@ -1,15 +1,34 @@
 ---
-categories:
-- ""
-- ""
-date: "2017-10-31T21:28:43-05:00"
-description: ""
-draft: false
+title: "Yield Curve Inversion"
+date: '2017-10-31T21:28:43-05:00'
+description: ''
+draft: no
 image: pic15.jpg
-keywords: ""
-slug: blog8
-title: Yield Curve Inversion
+keywords: ''
+slug: blog9
+categories:
+- ''
+- ''
 ---
+
+```{r, setup, echo=FALSE}
+
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
 ```{r load-libraries, echo=FALSE}
 
  # Load ggplot2, dplyr, and all the other tidyverse packages
@@ -28,26 +47,15 @@ library(openintro)
 library(tidyquant)
 
 ```
-# Yield Curve Inversion
 
-Every so often, we hear warnings from commentators on the "inverted yield curve" and its predictive power with respect to recessions. An explainer what a [inverted yield curve is can be found here](https://www.reuters.com/article/us-usa-economy-yieldcurve-explainer/explainer-what-is-an-inverted-yield-curve-idUSKBN1O50GA). If you'd rather listen to something, here is a great podcast from [NPR on yield curve indicators](https://www.podbean.com/media/share/dir-4zgj9-6aefd11)
+The inverted yield curve has a reputation as being a strong predictor of recessions and its presence is often met with a level of panic. 
 
-In addition, many articles and commentators think that, e.g., [*Yield curve inversion is viewed as a harbinger of recession*](https://www.bloomberg.com/news/articles/2019-08-14/u-k-yield-curve-inverts-for-first-time-since-financial-crisis). One can always doubt whether inversions are truly a harbinger of recessions, and [use the attached parable on yield curve inversions](https://twitter.com/5_min_macro/status/1161627360946511873).
+The yield curve's presence as a harbinger of recession can be doubted: an idea we hope to explore. 
 
-
-```{r yield_curve_parable.jpg, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve_parable.jpg"), error = FALSE)
-```
-
-In our case we will look at US data and use the [FRED database](https://fred.stlouisfed.org/) to download historical yield curve rates, and plot the yield curves since 1999 to see when the yield curves flatten. If you want to know more, a very nice article that explains the [yield curve is and its inversion can be found here](https://fredblog.stlouisfed.org/2018/10/the-data-behind-the-fear-of-yield-curve-inversions/). At the end of this chllenge you should produce this chart
+Using US data from the FRED database, we will explore this doubt surrounding yield curve inversion.
 
 
-```{r yield_curve_challenge, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve_challenge.png"), error = FALSE)
-```
-
-
-First, we will use the `tidyquant` package to download monthly rates for different durations. 
+First, we use the `tidyquant` package to download monthly rates for different durations. 
 
 ```{r get_rates, warning=FALSE}
 # Get a list of FRED codes for US rates and US yield curve; choose monthly frequency
@@ -107,6 +115,7 @@ The first thing would be to join this dataframe `df` with the dataframe `mylooku
 
 
 ```{r join_data, warning=FALSE}
+
 #Join the two dataframes to creae a new dataframe called yield_curve.
 yield_curve <-left_join(df,mylookup,by="symbol") 
 
@@ -117,11 +126,6 @@ yield_curve <-left_join(df,mylookup,by="symbol")
 
 ### Yields on US rates by duration since 1960
 
-```{r yield_curve_1, echo=FALSE, out.width="100%"}
-
-knitr::include_graphics(here::here("images", "yield_curve1.png"), error = FALSE)
-
-```
 
 ```{r,fig.width=12,fig.height=11}
 
@@ -145,11 +149,6 @@ ggplot(yield_curve, aes(x = date,
 ### Monthly yields on US rates by duration since 1999 on a year-by-year basis
 
 
-```{r yield_curve_2, echo=FALSE, out.width="100%"}
-
-knitr::include_graphics(here::here("images", "yield_curve2.png"), error = FALSE)
-
-```
 
 ```{r,fig.width=12,fig.height=11}
 
@@ -177,11 +176,6 @@ ggplot(new_yield_curve, aes(x = maturity,
 
 ### 3-month and 10-year yields since 1999
 
-```{r yield_curve_3, echo=FALSE, out.width="100%"}
-
-knitr::include_graphics(here::here("images", "yield_curve3.png"), error = FALSE)
-
-```
 
 ```{r,fig.width=12,fig.height=11}
 
@@ -215,7 +209,7 @@ Besides calculating the spread (10year - 3months), there are a few things we nee
 1. Plot the spread between 30 years and 3 months as a blue/red ribbon, based on whether the spread is positive (blue) or negative(red)
 
 
-- For the first, the code below creates a dataframe with all US recessions since 1946
+Using the code below , be create a dataframe with all US recessions since 1946
 
 ```{r setup_US-recessions, warning=FALSE}
 
@@ -265,4 +259,7 @@ geom_ribbon(aes(ymin = pmin(difference,0),
        subtitle = "Difference in % points, monthly averages.\nShaded areas correspond to recessions",
        x="",
        y="Difference (10 year-3month) yield in %")
+
 ```
+As can be seen, the yield curve inversion in almost all cases predicts a recession. However, it must be maintained that it cannot be used as a 100% accuracte indicator and instead should be used as a strong indicator to support other research. 
+
