@@ -1,14 +1,14 @@
 ---
-categories:
-- ""
-- ""
-date: "2017-10-31T21:28:43-05:00"
-description: ""
-draft: false
+title: "Yield Curve Inversion"
+date: '2017-10-31T21:28:43-05:00'
+description:""
+draft: no
 image: pic11.jpg
-keywords: ""
+keywords: ''
 slug: blog5
-title: Yield Curve 
+categories:
+- ''
+- ''
 ---
 
 ```{r, setup, echo=FALSE}
