@@ -121,11 +121,11 @@ disqusShortname = ""
       image = "pic05.jpg"
       url = "blogs/ipsum"
 
-    [[params.tiles.showcase]]
-      title = "Etiam"
-      subtitle = "Feugiat Amet Tempus"
-      image = "pic06.jpg"
-      url = "blogs/ipsum"
+     #[[params.tiles.showcase]]
+      # title = "Etiam"
+      # subtitle = "Feugiat Amet Tempus"
+      # image = "pic06.jpg"
+      # url = "blogs/ipsum"
     # You can make more showcases by copy and pasting the code above
 
   [params.blog]
@@ -139,7 +139,9 @@ disqusShortname = ""
   [params.two]
     enable = true
     title = "Professional Background"
-    subtitle = "Current Masters in Financial Analysis student at London Business School with experience in the private wealth management and manufacturing sectors. Hoping to leverage my experience and current masters experience to obtain employment in the corporate finance sector"   buttonText = "Resume"
+    subtitle = 
+    Current Masters in Financial Analysis student at London Business School with experience in the private wealth management and manufacturing sectors. Hoping to leverage my experience and current masters experience to obtain employment in the corporate finance sector
+    buttonText = "Resume"
     url = "Berry Alastair Resume.pdf"
 
 
