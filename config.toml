@@ -118,11 +118,6 @@ disqusShortname = ""
       subtitle = "Risk and Return Profile"
       image = "stockmarket.jpg"
       url = "blogs/blog7"
-      
-    [[params.tiles.showcase]]
-      title = "About Me"
-      subtitle = "My Story So Far"
-      url = "myresume/project1"
 
     #[[params.tiles.showcase]]
     # title = "Consequat"
@@ -151,7 +146,7 @@ disqusShortname = ""
     subtitle = """
     Current Masters in Financial Analysis student at London Business School with experience in the private wealth management and manufacturing sectors. Hoping to leverage my skills and current masters experience to obtain employment in the corporate finance sector."""
     buttonText = "My Resume"
-    url = "AlastairBerryResume.pdf"
+    url = "myresume/blog9"
 
 
   # Contact section

@@ -18,6 +18,6 @@ Originally from the countryside in Scotland, I've always been attracted to the o
 
 ## Hobbies
 
-Unfortunately with the current coronavirus situation I can't pursue one of my biggest hobbies: travelling. There's nothing better to me than exploring somewhere I've never been before and I can't wait to hop back on a plane. Growing up close to the ocean I've always been fascinated by whats below and soon I became a big fan of scuba diving. I'm lucky to have dived in Malaysia, Costa Rica and Portugal and can't wait to explore the depths of other countries. I'm also learning to speak Spanish at the moment and hope to eventually become fluent through the help of Spanish TV and my Spanish roommate!
+Unfortunately with the current coronavirus situation I can't pursue one of my biggest hobbies: travelling. There's nothing better to me than exploring somewhere I've never been before and I can't wait to hop back on a plane. Growing up close to the ocean I've always been fascinated by what is below and this eventually led me to become a big fan of scuba diving. I'm lucky to have dived in Malaysia, Costa Rica and Portugal and can't wait to explore the depths of other countries. I'm also learning to speak Spanish at the moment and hope to eventually become fluent through the help of Spanish TV and my Spanish roommate!
 
 
