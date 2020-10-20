@@ -5,7 +5,7 @@ description: ''
 draft: no
 image: alastairberryresume.pdf
 keywords: ''
-slug: blog9
+slug: myresume1
 categories:
 - ''
 - ''

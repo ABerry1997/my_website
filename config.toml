@@ -119,6 +119,12 @@ disqusShortname = ""
       image = "stockmarket.jpg"
       url = "blogs/blog7"
 
+    [[params.tiles.showcase]]
+      title = "My Resume"
+      subtitle = "...."
+      image = "stockmarket.jpg"
+      url = "myresume/myresume1"
+      
     #[[params.tiles.showcase]]
     # title = "Consequat"
      # subtitle = "Ipsum Dolor Sit Amet"
@@ -146,7 +152,7 @@ disqusShortname = ""
     subtitle = """
     Current Masters in Financial Analysis student at London Business School with experience in the private wealth management and manufacturing sectors. Hoping to leverage my skills and current masters experience to obtain employment in the corporate finance sector."""
     buttonText = "My Resume"
-    url = "myresume/blog9"
+    url = "myresume/myresume1"
 
 
   # Contact section
