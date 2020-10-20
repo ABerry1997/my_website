@@ -50,6 +50,10 @@ disqusShortname = ""
     [[params.navigation.links]]
       name = "Blogs"
       url = "blogs"
+      
+      [[params.navigation.links]]
+      name = "My Resume"
+      url = "myresume"
 
     # [[params.navigation.links]]
       # name = "Generic Blog"
@@ -82,7 +86,7 @@ disqusShortname = ""
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
     title = "Hi, my name is Alastair"
-    subtitle = "welcome to my portfolio where I track my progress utlising R programming" 
+    subtitle = "welcome to my portfolio where I track my progress learning R programming" 
     buttonText = "You Know You Want To"
 
 
@@ -98,7 +102,7 @@ disqusShortname = ""
       url = "blogs/blog6"
 
     [[params.tiles.showcase]]
-      title = "Airbnb Project"
+      title = "Airbnb Group Project"
       subtitle = "Cost Prediction Using Regression Analysis"
       image = "pic08.jpg"
       url = "blogs/blog8"
@@ -114,6 +118,11 @@ disqusShortname = ""
       subtitle = "Risk and Return Profile"
       image = "stockmarket.jpg"
       url = "blogs/blog7"
+      
+    [[params.tiles.showcase]]
+      title = "About Me"
+      subtitle = "My Story So Far"
+      url = "myresume/project1"
 
     #[[params.tiles.showcase]]
     # title = "Consequat"
